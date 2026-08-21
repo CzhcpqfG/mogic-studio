@@ -17,6 +17,7 @@ import type { CreativeAgentRun } from "@/services/api/creative";
 import { optimizePrompt } from "@/services/api/prompt-optimization";
 import { usePublicSessionStore } from "@/stores/use-public-session-store";
 import { createAgentDraftFromHash } from "@/lib/create-agent-prompt";
+import type { TaskTemplate } from "@/lib/task-templates";
 import { resolveSiteTitle } from "@/lib/site-brand";
 
 import { CreativeComposer } from "./components/creative-composer";
@@ -25,6 +26,8 @@ import { applyAgentGenerationCapability, shouldShowVideoFrameControls } from "./
 import { CreativeConversationList } from "./components/creative-conversation-list";
 import { CreativeMessages } from "./components/creative-messages";
 import { CreateWorkbenchOverview } from "./components/create-workbench-overview";
+import { CreateTaskShelf } from "./components/create-task-shelf";
+import { CreateTemplateWizard } from "./components/create-template-wizard";
 import { publicCreativeAssetPrompt, remapCreativeAssetReferences } from "./components/creative-asset-mention";
 import { createConversationHref, createConversationIdFromSearch } from "./create-conversation-navigation";
 import { useCreateAgent } from "./use-create-agent";
@@ -64,6 +67,8 @@ export default function CreatePage() {
     const [generationPreferences, setGenerationPreferences] = useState<CreativeGenerationPreferences>({});
     const [historyOpen, setHistoryOpen] = useState(false);
     const [assetsOpen, setAssetsOpen] = useState(false);
+    const [activeTemplate, setActiveTemplate] = useState<TaskTemplate>();
+    const [templateSubmitting, setTemplateSubmitting] = useState(false);
     const [awayFromLatest, setAwayFromLatest] = useState(false);
     const [composerExpanded, setComposerExpanded] = useState(true);
     const publicSettings = usePublicSessionStore((state) => state.payload?.settings);
@@ -213,6 +218,30 @@ export default function CreatePage() {
             }
         } catch (error) {
             message.error(error instanceof Error ? error.message : "素材上传失败");
+        }
+    };
+
+    const submitFromTemplate = async (template: TaskTemplate, prompt: string) => {
+        if (templateSubmitting || agent.sending) return;
+        setTemplateSubmitting(true);
+        try {
+            if (
+                await agent.submit(prompt, {
+                    publicPrompt: publicCreativeAssetPrompt(prompt),
+                    skillIds: [],
+                    ...(template.preferences ? { preferences: template.preferences } : {}),
+                })
+            ) {
+                setActiveTemplate(undefined);
+                if (template.surface === "video") {
+                    setCreationMode("video");
+                    setGenerationPreferences((current) => ({ ...current, mode: "video" }));
+                }
+            }
+        } catch (error) {
+            message.error(error instanceof Error ? error.message : "发送失败");
+        } finally {
+            setTemplateSubmitting(false);
         }
     };
 
@@ -638,29 +667,45 @@ export default function CreatePage() {
                             <div className="mx-auto flex min-h-full w-full min-w-0 max-w-[1240px] flex-col items-center px-2.5 pb-3 pt-5 sm:px-8 sm:pb-8 sm:pt-14 lg:pt-[10vh]">
                                 <div className="text-center">
                                     <h1 className="text-[23px] font-semibold leading-tight sm:text-[31px]">{siteTitle} 创作 Agent</h1>
-                                    <p className="mt-2 text-sm text-[#8b949f] dark:text-[#7f8996]">从一个想法开始</p>
+                                    <p className="mt-2 text-sm text-[#8b949f] dark:text-[#7f8996]">选一个任务开始，或者直接描述你的想法</p>
                                 </div>
-                                <div className="mt-5 w-full sm:mt-8">{composer}</div>
-                                <div className="mt-2 flex w-full min-w-0 flex-wrap justify-center gap-1.5 sm:mt-3 sm:gap-2">
-                                    {skillsLoading ? <span className="px-2 py-2 text-xs text-[#9aa2ad]">正在加载创作 Skill...</span> : null}
-                                    {skills.map((skill, index) => {
-                                        const visual = skillVisual(skill, index);
-                                        const Icon = visual.icon;
-                                        return (
-                                            <button
-                                                key={skill.id}
-                                                type="button"
-                                                aria-label={`使用 ${skill.name} Skill`}
-                                                title={skill.description}
-                                                className="inline-flex h-9 items-center gap-2 rounded-full border border-[#e3e7eb] bg-white px-3 text-sm font-medium text-[#343b44] transition hover:border-[#cfd6dd] hover:bg-[#f7f8fa] dark:border-[#343a42] dark:bg-[#181b20] dark:text-[#dce1e7] dark:hover:border-[#4a525d] dark:hover:bg-[#20242a]"
-                                                onClick={() => selectSkill(skill)}
-                                            >
-                                                <Icon className={`size-4 ${visual.iconClass}`} />
-                                                <span>{skill.name}</span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                                {activeTemplate ? (
+                                    <div data-testid="create-template-wizard-host" className="mt-5 w-full max-w-[560px] sm:mt-8">
+                                        <CreateTemplateWizard
+                                            template={activeTemplate}
+                                            submitting={templateSubmitting}
+                                            onExit={() => setActiveTemplate(undefined)}
+                                            onComplete={(prompt) => void submitFromTemplate(activeTemplate, prompt)}
+                                        />
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="mt-5 w-full max-w-[860px] sm:mt-8">
+                                            <CreateTaskShelf onSelect={setActiveTemplate} />
+                                        </div>
+                                        <div className="mt-4 w-full sm:mt-6">{composer}</div>
+                                        <div className="mt-2 flex w-full min-w-0 flex-wrap justify-center gap-1.5 sm:mt-3 sm:gap-2">
+                                            {skillsLoading ? <span className="px-2 py-2 text-xs text-[#9aa2ad]">正在加载创作 Skill...</span> : null}
+                                            {skills.map((skill, index) => {
+                                                const visual = skillVisual(skill, index);
+                                                const Icon = visual.icon;
+                                                return (
+                                                    <button
+                                                        key={skill.id}
+                                                        type="button"
+                                                        aria-label={`使用 ${skill.name} Skill`}
+                                                        title={skill.description}
+                                                        className="inline-flex h-9 items-center gap-2 rounded-full border border-[#e3e7eb] bg-white px-3 text-sm font-medium text-[#343b44] transition hover:border-[#cfd6dd] hover:bg-[#f7f8fa] dark:border-[#343a42] dark:bg-[#181b20] dark:text-[#dce1e7] dark:hover:border-[#4a525d] dark:hover:bg-[#20242a]"
+                                                        onClick={() => selectSkill(skill)}
+                                                    >
+                                                        <Icon className={`size-4 ${visual.iconClass}`} />
+                                                        <span>{skill.name}</span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </>
+                                )}
                                 <CreateWorkbenchOverview onUseAsset={useRecentAsset} />
                             </div>
                         )}

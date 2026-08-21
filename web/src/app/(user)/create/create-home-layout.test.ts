@@ -43,6 +43,10 @@ describe("create Agent home layout", () => {
         expect(conversationList).toContain("group flex min-h-13");
         expect(page).not.toContain("最近创作");
         expect(page).toContain("<CreateWorkbenchOverview");
+        expect(page).toContain("<CreateTaskShelf");
+        expect(page).toContain("<CreateTemplateWizard");
+        expect(page).toContain("submitFromTemplate");
+        expect(page).toContain("选一个任务开始");
         expect(composer).toContain('centered ? "max-w-[1080px]"');
         expect(composer).toContain('data-compact="true"');
         expect(composer).toContain('data-compact="false"');
