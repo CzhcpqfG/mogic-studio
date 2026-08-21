@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Mogic-Studio icon">
+  <defs>
+    <linearGradient id="mogicMark" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="mogicMarkDark" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#67e8f9"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .mark {
+      stroke: url(#mogicMark);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .mark {
+        stroke: url(#mogicMarkDark);
+      }
+    }
+  </style>
+  <path class="mark" transform="rotate(-18 200 200)" d="M 200 200 C 200 140, 262 140, 262 200 C 262 260, 200 260, 200 200 C 200 140, 138 140, 138 200 C 138 260, 200 260, 200 200 Z" fill="none" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

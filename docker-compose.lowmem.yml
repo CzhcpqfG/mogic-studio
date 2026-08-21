@@ -1,0 +1,55 @@
+services:
+  app:
+    image: ${MOGIC_STUDIO_IMAGE:-ghcr.io/csyqlz/mogic-studio:v0.0.6}
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - mogic-studio-data:/app/web/.data
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=384"
+      UV_THREADPOOL_SIZE: "2"
+      NEXT_TELEMETRY_DISABLED: "1"
+      MOGIC_STUDIO_DATA_DIR: /app/web/.data
+      MOGIC_STUDIO_INTERNAL_ORIGIN: http://127.0.0.1:3000
+      MOGIC_STUDIO_DATABASE_PROVIDER: postgres
+      DATABASE_URL: ${DATABASE_URL:?低内存部署请在 .env 中配置外部 PostgreSQL DATABASE_URL}
+      MOGIC_STUDIO_DATABASE_POOL_MAX: ${MOGIC_STUDIO_DATABASE_POOL_MAX:-5}
+      MOGIC_STUDIO_DATABASE_SSL: ${MOGIC_STUDIO_DATABASE_SSL:-1}
+      MOGIC_STUDIO_ENCRYPTION_KEY: ${MOGIC_STUDIO_ENCRYPTION_KEY:?请在 .env 中配置 MOGIC_STUDIO_ENCRYPTION_KEY}
+      MOGIC_STUDIO_INSTALL_TOKEN: ${MOGIC_STUDIO_INSTALL_TOKEN:?请在 .env 中配置至少 32 位一次性安装令牌}
+      MOGIC_STUDIO_MAINTENANCE_TOKEN: ${MOGIC_STUDIO_MAINTENANCE_TOKEN:?请在 .env 中配置至少 32 位维护令牌}
+      MOGIC_STUDIO_WORKER_TOKEN: ${MOGIC_STUDIO_WORKER_TOKEN:?请在 .env 中配置独立的至少 32 位 Worker 令牌}
+    mem_limit: 512m
+    memswap_limit: 768m
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health/live').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  generation-worker:
+    image: ${MOGIC_STUDIO_IMAGE:-ghcr.io/csyqlz/mogic-studio:v0.0.6}
+    command: ["node", "/app/web/scripts/generation-worker.mjs"]
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=64"
+      MOGIC_STUDIO_WORKER_API_ORIGIN: http://app:3000
+      MOGIC_STUDIO_WORKER_TOKEN: ${MOGIC_STUDIO_WORKER_TOKEN:?请在 .env 中配置独立的至少 32 位 Worker 令牌}
+    depends_on:
+      app:
+        condition: service_healthy
+    mem_limit: 96m
+    memswap_limit: 128m
+    restart: unless-stopped
+
+volumes:
+  mogic-studio-data:
