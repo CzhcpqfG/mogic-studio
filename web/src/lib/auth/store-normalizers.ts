@@ -518,7 +518,7 @@ export function normalizeSiteFriendLinks(settings: unknown, siteTitle = DEFAULT_
     return links
         .map((link, index) => {
             const value = link as Partial<SiteFriendLink>;
-            const defaultHomeLink = value.id === "mogic-studio-home" && value.url?.replace(/\/$/, "") === "https://github.com/csyqlz/mogic-studio";
+            const defaultHomeLink = value.id === "mogic-studio-home" && value.url?.replace(/\/$/, "") === "https://github.com/CzhcpqfG/mogic-studio";
             return {
                 id: normalizeText(value.id, `friend-${index + 1}`, 80),
                 label: normalizeText(defaultHomeLink && (!value.label || value.label === DEFAULT_SITE_SETTINGS.title) ? siteTitle : value.label, "友情链接", 32),

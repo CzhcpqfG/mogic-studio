@@ -1,6 +1,6 @@
 services:
   app:
-    image: ${MOGIC_STUDIO_IMAGE:-ghcr.io/csyqlz/mogic-studio:v0.0.6}
+    image: ${MOGIC_STUDIO_IMAGE:-ghcr.io/CzhcpqfG/mogic-studio:v0.0.6}
     container_name: mogic-studio
     env_file:
       - .env
@@ -35,7 +35,7 @@ services:
     restart: unless-stopped
 
   generation-worker:
-    image: ${MOGIC_STUDIO_IMAGE:-ghcr.io/csyqlz/mogic-studio:v0.0.6}
+    image: ${MOGIC_STUDIO_IMAGE:-ghcr.io/CzhcpqfG/mogic-studio:v0.0.6}
     container_name: mogic-studio-generation-worker
     command: ["node", "/app/web/scripts/generation-worker.mjs"]
     environment:

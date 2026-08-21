@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  IMAGE_NAME: ghcr.io/csyqlz/mogic-studio
+  IMAGE_NAME: ghcr.io/CzhcpqfG/mogic-studio
 
 jobs:
   quality:

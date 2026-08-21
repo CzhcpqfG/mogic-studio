@@ -1,6 +1,6 @@
 services:
   docs:
-    image: ghcr.io/csyqlz/mogic-studio-docs:v0.0.6
+    image: ghcr.io/CzhcpqfG/mogic-studio-docs:v0.0.6
     ports:
       - "3001:3000"
     restart: unless-stopped

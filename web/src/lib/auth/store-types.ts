@@ -326,7 +326,7 @@ export const DEFAULT_SITE_SOCIALS: SiteSocialSettings = {
 };
 
 export const DEFAULT_SITE_FRIEND_LINKS: SiteFriendLink[] = [
-    { id: "mogic-studio-home", label: "Mogic-Studio", url: "https://github.com/csyqlz/mogic-studio", enabled: true },
+    { id: "mogic-studio-home", label: "Mogic-Studio", url: "https://github.com/CzhcpqfG/mogic-studio", enabled: true },
     { id: "qq-mogic-open-source", label: "开源交流 QQ 群", url: MOGIC_STUDIO_QQ_GROUP_URL, enabled: false },
     { id: "linux-do", label: "Linux.do", url: "https://linux.do/", enabled: true },
 ];

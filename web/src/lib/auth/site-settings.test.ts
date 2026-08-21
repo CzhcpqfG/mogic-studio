@@ -48,7 +48,7 @@ describe("site settings", () => {
             seoTitle: "独立 SEO 标题",
             seoKeywords: "自定义,关键词",
             footerCopyright: "© 独立运营主体",
-            friendLinks: [{ id: "mogic-studio-home", label: "官方网站", url: "https://github.com/csyqlz/mogic-studio", enabled: true }],
+            friendLinks: [{ id: "mogic-studio-home", label: "官方网站", url: "https://github.com/CzhcpqfG/mogic-studio", enabled: true }],
         });
 
         expect(settings).toMatchObject({ seoTitle: "独立 SEO 标题", seoKeywords: "自定义,关键词", footerCopyright: "© 独立运营主体" });

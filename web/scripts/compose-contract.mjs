@@ -4,15 +4,15 @@ import path from "node:path";
 import { parse } from "yaml";
 
 export const composeProfiles = [
-    { file: "docker-compose.yml", embeddedPostgres: true, image: "${MOGIC_STUDIO_IMAGE:-ghcr.io/csyqlz/mogic-studio:v0.0.6}", workerOrigin: "http://app:3000" },
+    { file: "docker-compose.yml", embeddedPostgres: true, image: "${MOGIC_STUDIO_IMAGE:-ghcr.io/CzhcpqfG/mogic-studio:v0.0.6}", workerOrigin: "http://app:3000" },
     { file: "docker-compose.local.yml", embeddedPostgres: true, image: "mogic-studio:local", workerOrigin: "http://app:3000" },
-    { file: "docker-compose.baota.yml", embeddedPostgres: false, hostNetwork: true, image: "${MOGIC_STUDIO_IMAGE:-ghcr.io/csyqlz/mogic-studio:v0.0.6}", workerOrigin: "http://127.0.0.1:3000" },
-    { file: "docker-compose.external-db.yml", embeddedPostgres: false, image: "${MOGIC_STUDIO_IMAGE:-ghcr.io/csyqlz/mogic-studio:v0.0.6}", workerOrigin: "http://app:3000" },
-    { file: "docker-compose.lowmem.yml", embeddedPostgres: false, image: "${MOGIC_STUDIO_IMAGE:-ghcr.io/csyqlz/mogic-studio:v0.0.6}", workerOrigin: "http://app:3000" },
+    { file: "docker-compose.baota.yml", embeddedPostgres: false, hostNetwork: true, image: "${MOGIC_STUDIO_IMAGE:-ghcr.io/CzhcpqfG/mogic-studio:v0.0.6}", workerOrigin: "http://127.0.0.1:3000" },
+    { file: "docker-compose.external-db.yml", embeddedPostgres: false, image: "${MOGIC_STUDIO_IMAGE:-ghcr.io/CzhcpqfG/mogic-studio:v0.0.6}", workerOrigin: "http://app:3000" },
+    { file: "docker-compose.lowmem.yml", embeddedPostgres: false, image: "${MOGIC_STUDIO_IMAGE:-ghcr.io/CzhcpqfG/mogic-studio:v0.0.6}", workerOrigin: "http://app:3000" },
 ];
 
 export const docsComposeProfiles = [
-    { file: "docs/docker-compose.yml", image: "ghcr.io/csyqlz/mogic-studio-docs:v0.0.6" },
+    { file: "docs/docker-compose.yml", image: "ghcr.io/CzhcpqfG/mogic-studio-docs:v0.0.6" },
     { file: "docs/docker-compose.local.yml", build: { context: "..", dockerfile: "docs/Dockerfile" } },
 ];
 
